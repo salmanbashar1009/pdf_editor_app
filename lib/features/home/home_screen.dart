@@ -17,6 +17,7 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              const SizedBox(height: 48,),
               Text(
                 'Choose a tool',
                 style: theme.textTheme.titleLarge,
@@ -28,7 +29,7 @@ class HomeScreen extends StatelessWidget {
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: 32),
               _FeatureCard(
                 icon: Icons.translate_rounded,
                 title: 'Translate PDF',
