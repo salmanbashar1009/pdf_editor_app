@@ -11,6 +11,9 @@ import 'package:pdf_editor_app/features/translate_pdf/presentation/screen/transl
 import 'package:pdf_editor_app/features/watermark_pdf/presentation/screen/watermark_pdf_screen.dart';
 
 import '../features/home/home_screen.dart';
+import '../features/watermark_pdf/data/watermark_pdf_remote_data_source.dart';
+import '../features/watermark_pdf/domain/watermark_pdf_repository.dart';
+import '../features/watermark_pdf/presentation/bloc/watermark_pdf_cubit.dart';
 
 class PdfEditorApp extends StatelessWidget {
   const PdfEditorApp({super.key});
@@ -20,14 +23,25 @@ class PdfEditorApp extends StatelessWidget {
     final dio = createDio();
     final pdfFileService = PdfFileService();
 
-    final translateRepository = TranslatePdfRepository(TranslatePdfRemoteDataSource(dio), pdfFileService);
-
+    final translateRepository = TranslatePdfRepository(
+      TranslatePdfRemoteDataSource(dio),
+      pdfFileService,
+    );
+    final watermarkRepository = WatermarkPdfRepository(
+      WatermarkPdfRemoteDataSource(dio),
+      pdfFileService,
+    );
 
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider<Dio>.value(value: dio),
         RepositoryProvider<PdfFileService>.value(value: pdfFileService),
-        RepositoryProvider<TranslatePdfRepository>.value(value: translateRepository,)
+        RepositoryProvider<TranslatePdfRepository>.value(
+          value: translateRepository,
+        ),
+        RepositoryProvider<WatermarkPdfRepository>.value(
+          value: watermarkRepository,
+        ),
       ],
       child: MaterialApp(
         title: 'PDF Editor App',
@@ -35,14 +49,18 @@ class PdfEditorApp extends StatelessWidget {
         theme: AppTheme.light,
         initialRoute: '/',
         routes: {
-          '/':(_) => const HomeScreen(),
-          '/translate':(context) => BlocProvider(
-            create: (_) => TranslatePdfCubit(
-              context.read<TranslatePdfRepository>(),
-            ),
+          '/': (_) => const HomeScreen(),
+          '/translate': (context) => BlocProvider(
+            create: (_) =>
+                TranslatePdfCubit(context.read<TranslatePdfRepository>()),
             child: const TranslatePdfScreen(),
           ),
-          '/watermark':(_) => const WatermarkPdfScreen(),
+          '/watermark': (context) => BlocProvider(
+            create: (_) => WatermarkPdfCubit(
+              context.read<WatermarkPdfRepository>(),
+            ),
+            child: const WatermarkPdfScreen(),
+          ),
         },
       ),
     );
