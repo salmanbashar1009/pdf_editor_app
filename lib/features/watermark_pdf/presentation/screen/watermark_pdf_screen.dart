@@ -10,7 +10,6 @@ import '../../../../core/widgets/primary_button.dart';
 import '../bloc/watermark_pdf_cubit.dart';
 import '../bloc/watermark_pdf_state.dart';
 
-
 class WatermarkPdfScreen extends StatelessWidget {
   const WatermarkPdfScreen({super.key});
 
@@ -51,10 +50,10 @@ class WatermarkPdfScreen extends StatelessWidget {
                   items: WatermarkPdfCubit.positions.entries
                       .map(
                         (e) => DropdownMenuItem(
-                      value: e.key,
-                      child: Text(e.value),
-                    ),
-                  )
+                          value: e.key,
+                          child: Text(e.value),
+                        ),
+                      )
                       .toList(),
                   onChanged: (v) {
                     if (v != null) cubit.setPosition(v);
@@ -168,9 +167,9 @@ class WatermarkPdfScreen extends StatelessWidget {
       final file = File(path);
       if (!await file.exists()) {
         if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('File not found.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('File not found.')));
         return;
       }
       final bytes = await file.readAsBytes();
@@ -186,14 +185,16 @@ class WatermarkPdfScreen extends StatelessWidget {
       if (!context.mounted) return;
       if (result != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('PDF downloaded successfully: ${result.path}')),
+          SnackBar(
+            content: Text('PDF downloaded successfully: ${result.path}'),
+          ),
         );
       }
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to download PDF: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to download PDF: $e')));
     }
   }
 }
@@ -286,8 +287,10 @@ class _SuccessCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.check_circle_rounded,
-                    color: theme.colorScheme.primary),
+                Icon(
+                  Icons.check_circle_rounded,
+                  color: theme.colorScheme.primary,
+                ),
                 const SizedBox(width: 8),
                 Text('Watermark applied', style: theme.textTheme.titleMedium),
               ],

@@ -3,7 +3,6 @@ import 'package:file_picker/file_picker.dart';
 
 import '../../../../core/errors/app_failure.dart';
 
-
 enum WatermarkStatus { idle, processing, success, error }
 
 class WatermarkPdfState extends Equatable {
@@ -32,11 +31,11 @@ class WatermarkPdfState extends Equatable {
 
   bool get canSubmit =>
       hasFile &&
-          text.trim().isNotEmpty &&
-          _isValidColor(color) &&
-          opacity >= 0.0 &&
-          opacity <= 1.0 &&
-          !isProcessing;
+      text.trim().isNotEmpty &&
+      _isValidColor(color) &&
+      opacity >= 0.0 &&
+      opacity <= 1.0 &&
+      !isProcessing;
 
   static bool _isValidColor(String value) {
     final hex = value.startsWith('#') ? value.substring(1) : value;

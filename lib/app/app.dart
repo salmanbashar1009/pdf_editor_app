@@ -56,9 +56,8 @@ class PdfEditorApp extends StatelessWidget {
             child: const TranslatePdfScreen(),
           ),
           '/watermark': (context) => BlocProvider(
-            create: (_) => WatermarkPdfCubit(
-              context.read<WatermarkPdfRepository>(),
-            ),
+            create: (_) =>
+                WatermarkPdfCubit(context.read<WatermarkPdfRepository>()),
             child: const WatermarkPdfScreen(),
           ),
         },

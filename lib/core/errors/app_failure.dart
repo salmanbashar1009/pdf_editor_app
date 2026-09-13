@@ -10,7 +10,7 @@ sealed class AppFailure {
 final class NetworkFailure extends AppFailure {
   const NetworkFailure([
     super.message =
-    'Unable to reach the server. Check your connection and try again.',
+        'Unable to reach the server. Check your connection and try again.',
   ]);
 }
 

@@ -8,20 +8,15 @@ class HomeScreen extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('PDF Editor'),
-      ),
+      appBar: AppBar(title: const Text('PDF Editor')),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 48,),
-              Text(
-                'Choose a tool',
-                style: theme.textTheme.titleLarge,
-              ),
+              const SizedBox(height: 48),
+              Text('Choose a tool', style: theme.textTheme.titleLarge),
               const SizedBox(height: 8),
               Text(
                 'Translate a PDF or add a text watermark. Both tools talk to the FastAPI backend.',
@@ -92,10 +87,7 @@ class _FeatureCard extends StatelessWidget {
                   children: [
                     Text(title, style: theme.textTheme.titleMedium),
                     const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: theme.textTheme.bodySmall,
-                    ),
+                    Text(subtitle, style: theme.textTheme.bodySmall),
                   ],
                 ),
               ),

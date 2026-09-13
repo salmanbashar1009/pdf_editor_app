@@ -3,7 +3,6 @@ import 'package:file_picker/file_picker.dart';
 
 import '../../../../core/errors/app_failure.dart';
 
-
 enum TranslateStatus { idle, processing, success, error }
 
 class TranslatePdfState extends Equatable {
@@ -27,9 +26,9 @@ class TranslatePdfState extends Equatable {
   bool get hasFile => selectedFile != null;
   bool get canSubmit =>
       hasFile &&
-          sourceLanguage.isNotEmpty &&
-          targetLanguage.isNotEmpty &&
-          !isProcessing;
+      sourceLanguage.isNotEmpty &&
+      targetLanguage.isNotEmpty &&
+      !isProcessing;
 
   TranslatePdfState copyWith({
     PlatformFile? selectedFile,

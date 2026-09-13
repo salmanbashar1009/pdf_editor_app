@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 class ApiConfig {
   ApiConfig._();
 
-
   /// Base URL of the FastAPI backend.
   /// Defaults to localhost for desktop/web; use 10.0.2.2 for Android emulator.
   static String get baseUrl {

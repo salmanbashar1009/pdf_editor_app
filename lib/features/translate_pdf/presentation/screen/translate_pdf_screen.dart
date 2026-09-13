@@ -10,7 +10,6 @@ import '../../../../core/widgets/primary_button.dart';
 import '../bloc/translate_pdf_cubit.dart';
 import '../bloc/translate_pdf_state.dart';
 
-
 class TranslatePdfScreen extends StatelessWidget {
   const TranslatePdfScreen({super.key});
 
@@ -76,8 +75,9 @@ class TranslatePdfScreen extends StatelessWidget {
                   ),
                 ] else ...[
                   PrimaryButton(
-                    label:
-                    state.isProcessing ? 'Translating…' : 'Translate PDF',
+                    label: state.isProcessing
+                        ? 'Translating…'
+                        : 'Translate PDF',
                     isLoading: state.isProcessing,
                     icon: Icons.translate_rounded,
                     onPressed: state.canSubmit ? cubit.submit : null,
@@ -107,9 +107,9 @@ class TranslatePdfScreen extends StatelessWidget {
       final file = File(path);
       if (!await file.exists()) {
         if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('File not found.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('File not found.')));
         return;
       }
       final bytes = await file.readAsBytes();
@@ -125,14 +125,16 @@ class TranslatePdfScreen extends StatelessWidget {
       if (!context.mounted) return;
       if (result != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('PDF downloaded successfully: ${result.path}')),
+          SnackBar(
+            content: Text('PDF downloaded successfully: ${result.path}'),
+          ),
         );
       }
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to download PDF: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to download PDF: $e')));
     }
   }
 }
@@ -217,12 +219,7 @@ class _LanguageDropdown extends StatelessWidget {
       initialValue: value,
       decoration: InputDecoration(labelText: label),
       items: TranslatePdfCubit.supportedLanguages.entries
-          .map(
-            (e) => DropdownMenuItem(
-          value: e.key,
-          child: Text(e.value),
-        ),
-      )
+          .map((e) => DropdownMenuItem(value: e.key, child: Text(e.value)))
           .toList(),
       onChanged: (v) {
         if (v != null) onChanged(v);
@@ -256,11 +253,15 @@ class _SuccessCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.check_circle_rounded,
-                    color: theme.colorScheme.primary),
+                Icon(
+                  Icons.check_circle_rounded,
+                  color: theme.colorScheme.primary,
+                ),
                 const SizedBox(width: 8),
-                Text('Translation complete',
-                    style: theme.textTheme.titleMedium),
+                Text(
+                  'Translation complete',
+                  style: theme.textTheme.titleMedium,
+                ),
               ],
             ),
             const SizedBox(height: 8),

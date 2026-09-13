@@ -11,10 +11,7 @@ class TranslatePdfCubit extends Cubit<TranslatePdfState> {
 
   final TranslatePdfRepository _repository;
 
-  static const supportedLanguages = {
-    'en': 'English',
-    'bn': 'Bangla',
-  };
+  static const supportedLanguages = {'en': 'English', 'bn': 'Bangla'};
 
   Future<void> pickPdf() async {
     try {
@@ -26,33 +23,37 @@ class TranslatePdfCubit extends Cubit<TranslatePdfState> {
 
       final file = result.single;
       if (file.path == null) {
-        emit(state.copyWith(
-          status: TranslateStatus.error,
-          failure: const FileFailure('Could not access the selected file.'),
-        ));
+        emit(
+          state.copyWith(
+            status: TranslateStatus.error,
+            failure: const FileFailure('Could not access the selected file.'),
+          ),
+        );
         return;
       }
 
-      emit(state.copyWith(
-        selectedFile: file,
-        status: TranslateStatus.idle,
-        clearFailure: true,
-        clearSavedPath: true,
-      ));
+      emit(
+        state.copyWith(
+          selectedFile: file,
+          status: TranslateStatus.idle,
+          clearFailure: true,
+          clearSavedPath: true,
+        ),
+      );
     } catch (_) {
-      emit(state.copyWith(
-        status: TranslateStatus.error,
-        failure: const FileFailure('Failed to pick a PDF file.'),
-      ));
+      emit(
+        state.copyWith(
+          status: TranslateStatus.error,
+          failure: const FileFailure('Failed to pick a PDF file.'),
+        ),
+      );
     }
   }
 
   void clearFile() {
-    emit(state.copyWith(
-      clearFile: true,
-      clearSavedPath: true,
-      clearFailure: true,
-    ));
+    emit(
+      state.copyWith(clearFile: true, clearSavedPath: true, clearFailure: true),
+    );
   }
 
   void setSourceLanguage(String code) {
@@ -68,28 +69,34 @@ class TranslatePdfCubit extends Cubit<TranslatePdfState> {
 
     final path = state.selectedFile?.path;
     if (path == null) {
-      emit(state.copyWith(
-        status: TranslateStatus.error,
-        failure: const ValidationFailure('Please select a PDF file.'),
-      ));
+      emit(
+        state.copyWith(
+          status: TranslateStatus.error,
+          failure: const ValidationFailure('Please select a PDF file.'),
+        ),
+      );
       return;
     }
 
     if (state.sourceLanguage == state.targetLanguage) {
-      emit(state.copyWith(
-        status: TranslateStatus.error,
-        failure: const ValidationFailure(
-          'Source and target languages must be different.',
+      emit(
+        state.copyWith(
+          status: TranslateStatus.error,
+          failure: const ValidationFailure(
+            'Source and target languages must be different.',
+          ),
         ),
-      ));
+      );
       return;
     }
 
-    emit(state.copyWith(
-      status: TranslateStatus.processing,
-      clearFailure: true,
-      clearSavedPath: true,
-    ));
+    emit(
+      state.copyWith(
+        status: TranslateStatus.processing,
+        clearFailure: true,
+        clearSavedPath: true,
+      ),
+    );
 
     try {
       final savedPath = await _repository.translateAndSave(
@@ -97,17 +104,18 @@ class TranslatePdfCubit extends Cubit<TranslatePdfState> {
         sourceLanguage: state.sourceLanguage,
         targetLanguage: state.targetLanguage,
       );
-      emit(state.copyWith(
-        status: TranslateStatus.success,
-        savedPath: savedPath,
-      ));
+      emit(
+        state.copyWith(status: TranslateStatus.success, savedPath: savedPath),
+      );
     } on AppFailure catch (f) {
       emit(state.copyWith(status: TranslateStatus.error, failure: f));
     } catch (_) {
-      emit(state.copyWith(
-        status: TranslateStatus.error,
-        failure: const UnexpectedFailure(),
-      ));
+      emit(
+        state.copyWith(
+          status: TranslateStatus.error,
+          failure: const UnexpectedFailure(),
+        ),
+      );
     }
   }
 
@@ -116,10 +124,12 @@ class TranslatePdfCubit extends Cubit<TranslatePdfState> {
   }
 
   void retry() {
-    emit(state.copyWith(
-      status: TranslateStatus.idle,
-      clearFailure: true,
-      clearSavedPath: true,
-    ));
+    emit(
+      state.copyWith(
+        status: TranslateStatus.idle,
+        clearFailure: true,
+        clearSavedPath: true,
+      ),
+    );
   }
 }
