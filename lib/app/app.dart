@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pdf_editor_app/app/theme/app_theme.dart';
 import 'package:pdf_editor_app/features/translate_pdf/presentation/screen/translate_pdf_screen.dart';
 import 'package:pdf_editor_app/features/watermark_pdf/presentation/screen/watermark_pdf_screen.dart';
 
@@ -12,6 +13,7 @@ class PdfEditorApp extends StatelessWidget {
     return MaterialApp(
       title: 'PDF Editor App',
       debugShowCheckedModeBanner: false,
+      theme: AppTheme.light,
       initialRoute: '/',
       routes: {
         '/':(_) => const HomeScreen(),
