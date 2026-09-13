@@ -1,90 +1,122 @@
-# PDF Editor Flutter App
+# PDF Editor — Flutter Client
 
-A professional Flutter demonstration client consuming the FastAPI PDF Editor backend APIs for **PDF Translation** and **PDF Watermarking**.
+Demonstration Flutter application that consumes the FastAPI PDF Editor APIs:
 
----
+- **Translate PDF** — `POST /api/translate-pdf`
+- **Watermark PDF** — `POST /editor/pdf/watermark`
+
+Built as a clean, feature-based, testable client for the Python + Flutter Developer practical coding assessment.
 
 ## Features
 
-1. **Translate PDF**:
-   - Select a PDF file from your device.
-   - Choose source and target languages (e.g., English `en`, Bangla `bn`).
-   - Submit via `POST /api/translate-pdf` (multipart form-data).
-   - View loading progress, preview the translated PDF, and download/save the resulting PDF.
+- Select a PDF and translate between English (en) and Bangla (bn)
+- Apply a text watermark with position, opacity, and color controls
+- Clear loading, success, and error states
+- In-app PDF preview
+- Configurable backend base URL
+- Unit tests with mocked API
+- GitHub Actions CI (format, analyze, test)
 
-2. **Watermark PDF**:
-   - Select a PDF file from your device.
-   - Enter custom watermark text (e.g., `CONFIDENTIAL`).
-   - Select position from the exact set (`top-left`, `top-center`, `top-right`, `center`, `bottom-left`, `bottom-center`, `bottom-right`).
-   - Configure opacity (0.0 to 1.0) using an interactive slider.
-   - Choose watermark color via Hex (`#RRGGBB`) input or swatches.
-   - Submit via `POST /editor/pdf/watermark` (multipart form-data).
-   - Preview and download the watermarked PDF.
+## Architecture
 
----
+```text
+lib/
+├── app/                 # MaterialApp, theme, routing
+├── core/                # network, config, files, shared widgets, errors
+└── features/
+    ├── home/
+    ├── translate_pdf/   # data → domain → presentation
+    └── watermark_pdf/   # data → domain → presentation
+```
 
-## Architecture & Tech Stack
+- **State management**: Bloc (Cubit)
+- **HTTP**: Dio (multipart + binary PDF responses)
+- **PDF preview**: pdfrx
 
-- **Framework**: Flutter (Dart)
-- **Architecture**: Feature-first clean architecture (`translate_pdf`, `watermark_pdf`).
-- **State Management**: `flutter_bloc` (`Cubit`) + `equatable`.
-- **Networking**: `Dio` with robust timeout configuration and centralized error mapping (`AppFailure`).
-- **PDF Handling**: `file_picker` (selection/saving), `path_provider` (temp storage), and `pdfrx` (in-app preview).
+## Requirements
 
----
+- Flutter 3.24+ / Dart 3.5+
+- A running FastAPI backend implementing the contract below
 
-## Getting Started
+## Setup
 
-### Prerequisites
-- Flutter SDK (stable channel)
-- Dart SDK
-- Running FastAPI backend server (`http://localhost:8000`)
+```bash
+git clone <repo>
+cd pdf_editor_app
+flutter pub get
+```
 
-### Setup & Run
-1. Clone the repository and navigate to the project directory:
-   ```bash
-   cd pdf_editor_app
-   ```
-2. Install dependencies:
-   ```bash
-   flutter pub get
-   ```
-3. Run the application:
-   - **Desktop / Web / Emulator**:
-     ```bash
-     flutter run
-     ```
-   - **Physical Android Device**:
-     Ensure ADB port forwarding is active for your backend:
-     ```bash
-     adb reverse tcp:8000 tcp:8000
-     flutter run
-     ```
-   - **Custom Backend URL**:
-     ```bash
-     flutter run --dart-define=API_BASE_URL=http://<your-server-ip>:8000
-     ```
+## Configure Backend URL
 
----
+Default: `http://localhost:8000`
 
-## Running Tests & Quality Checks
+Override at run time:
 
-- **Run Unit & Widget Tests**:
-  ```bash
-  flutter test
-  ```
-- **Run Static Analysis**:
-  ```bash
-  flutter analyze
-  ```
-- **Format Code**:
-  ```bash
-  dart format .
-  ```
+```bash
+# Desktop / web
+flutter run --dart-define=API_BASE_URL=http://localhost:8000
 
----
+# Android emulator (host machine)
+flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000
+
+# Docker-hosted backend on another host
+flutter run --dart-define=API_BASE_URL=http://192.168.1.10:8000
+```
+
+The value is read from `ApiConfig.baseUrl` (`lib/core/config/api_config.dart`).
+
+## Run
+
+```bash
+flutter run
+```
+
+## Test
+
+```bash
+flutter test
+dart format --set-exit-if-changed .
+flutter analyze
+```
+
+## API Endpoints Consumed
+
+### Translate
+```text
+POST /api/translate-pdf
+multipart: file, source_language, target_language
+→ application/pdf
+```
+
+### Watermark
+```text
+POST /editor/pdf/watermark
+multipart: file, text, position, opacity, color
+→ application/pdf
+```
+
+- **Position values (exact)**:
+  `top-left` | `top-center` | `top-right` | `center` | `bottom-left` | `bottom-center` | `bottom-right`
+- **Color format**: `#RRGGBB`
+
+## Project Plans
+
+See `plans/` for requirements, design, tasks, tests, and acceptance checklist.
+
+## CI/CD
+
+GitHub Actions workflow (`.github/workflows/ci.yml`) runs:
+- `flutter pub get`
+- Format check
+- `flutter analyze`
+- `flutter test`
+- Smoke web build
 
 ## Known Limitations
 
-- Requires active connection to the FastAPI backend server.
-- Large PDFs may be subject to backend memory and network timeout limits.
+- Depends on backend availability and supported languages.
+- Large PDFs may hit network or memory limits.
+- In-app preview quality depends on `pdfrx` and the platform.
+- No offline history or authentication (out of scope for the assessment).
+
+
