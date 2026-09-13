@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pdfrx/pdfrx.dart';
@@ -68,6 +71,7 @@ class TranslatePdfScreen extends StatelessWidget {
                   _SuccessCard(
                     path: state.savedPath!,
                     onOpen: () => _openPdf(context, state.savedPath!),
+                    onDownload: () => _downloadPdf(context, state.savedPath!),
                     onNew: cubit.reset,
                   ),
                 ] else ...[
@@ -96,6 +100,40 @@ class TranslatePdfScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _downloadPdf(BuildContext context, String path) async {
+    try {
+      final file = File(path);
+      if (!await file.exists()) {
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('File not found.')),
+        );
+        return;
+      }
+      final bytes = await file.readAsBytes();
+      final fileName = path.split(RegExp(r'[/\\]')).last;
+
+      final result = await FilePicker.saveFile(
+        fileName: fileName,
+        bytes: bytes,
+        mimeType: 'application/pdf',
+        dialogTitle: 'Download Translated PDF',
+      );
+
+      if (!context.mounted) return;
+      if (result != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('PDF downloaded successfully: ${result.path}')),
+        );
+      }
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to download PDF: $e')),
+      );
+    }
   }
 }
 
@@ -197,11 +235,13 @@ class _SuccessCard extends StatelessWidget {
   const _SuccessCard({
     required this.path,
     required this.onOpen,
+    required this.onDownload,
     required this.onNew,
   });
 
   final String path;
   final VoidCallback onOpen;
+  final VoidCallback onDownload;
   final VoidCallback onNew;
 
   @override
@@ -233,6 +273,12 @@ class _SuccessCard extends StatelessWidget {
               label: 'Open / Preview',
               icon: Icons.visibility_rounded,
               onPressed: onOpen,
+            ),
+            const SizedBox(height: 8),
+            PrimaryButton(
+              label: 'Download PDF',
+              icon: Icons.download_rounded,
+              onPressed: onDownload,
             ),
             const SizedBox(height: 8),
             OutlinedButton(

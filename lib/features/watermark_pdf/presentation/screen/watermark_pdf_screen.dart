@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pdfrx/pdfrx.dart';
@@ -43,7 +46,7 @@ class WatermarkPdfScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
-                  value: state.position,
+                  initialValue: state.position,
                   decoration: const InputDecoration(labelText: 'Position'),
                   items: WatermarkPdfCubit.positions.entries
                       .map(
@@ -128,6 +131,7 @@ class WatermarkPdfScreen extends StatelessWidget {
                   _SuccessCard(
                     path: state.savedPath!,
                     onOpen: () => _openPdf(context, state.savedPath!),
+                    onDownload: () => _downloadPdf(context, state.savedPath!),
                     onNew: cubit.reset,
                   ),
                 ] else ...[
@@ -157,6 +161,40 @@ class WatermarkPdfScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _downloadPdf(BuildContext context, String path) async {
+    try {
+      final file = File(path);
+      if (!await file.exists()) {
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('File not found.')),
+        );
+        return;
+      }
+      final bytes = await file.readAsBytes();
+      final fileName = path.split(RegExp(r'[/\\]')).last;
+
+      final result = await FilePicker.saveFile(
+        fileName: fileName,
+        bytes: bytes,
+        mimeType: 'application/pdf',
+        dialogTitle: 'Download Watermarked PDF',
+      );
+
+      if (!context.mounted) return;
+      if (result != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('PDF downloaded successfully: ${result.path}')),
+        );
+      }
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to download PDF: $e')),
+      );
+    }
   }
 }
 
@@ -227,18 +265,20 @@ class _SuccessCard extends StatelessWidget {
   const _SuccessCard({
     required this.path,
     required this.onOpen,
+    required this.onDownload,
     required this.onNew,
   });
 
   final String path;
   final VoidCallback onOpen;
+  final VoidCallback onDownload;
   final VoidCallback onNew;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Card(
-      color: theme.colorScheme.primaryContainer.withOpacity(0.35),
+      color: theme.colorScheme.primaryContainer.withValues(alpha: 0.35),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -262,6 +302,12 @@ class _SuccessCard extends StatelessWidget {
               label: 'Open / Preview',
               icon: Icons.visibility_rounded,
               onPressed: onOpen,
+            ),
+            const SizedBox(height: 8),
+            PrimaryButton(
+              label: 'Download PDF',
+              icon: Icons.download_rounded,
+              onPressed: onDownload,
             ),
             const SizedBox(height: 8),
             OutlinedButton(
